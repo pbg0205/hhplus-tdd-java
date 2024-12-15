@@ -17,18 +17,16 @@ import io.hhplus.tdd.point.dto.UserPointSelectDTO;
 import io.hhplus.tdd.point.infrastructure.database.PointHistory;
 import io.hhplus.tdd.point.infrastructure.database.UserPoint;
 import io.hhplus.tdd.point.dto.UserPointResponse;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/point")
+@RequiredArgsConstructor
 public class PointController {
 
 	private static final Logger log = LoggerFactory.getLogger(PointController.class);
 
 	private final UserPointService userPointService;
-
-	public PointController(final UserPointService userPointService) {
-		this.userPointService = userPointService;
-	}
 
 	@GetMapping("{id}")
 	public ResponseEntity<UserPointResponse> point(
@@ -36,7 +34,7 @@ public class PointController {
 	) {
 		final UserPointSelectDTO userPointSelectDTO = this.userPointService.findById(id);
 		return ResponseEntity.ok()
-			.body(new UserPointResponse(userPointSelectDTO.getUserId(), userPointSelectDTO.getPoint()));
+			.body(new UserPointResponse(userPointSelectDTO.userId(), userPointSelectDTO.point()));
 	}
 
 	/**

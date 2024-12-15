@@ -9,15 +9,13 @@ import io.hhplus.tdd.point.exception.InvalidUserIdException;
 import io.hhplus.tdd.point.exception.UserNotFoundException;
 import io.hhplus.tdd.point.infrastructure.database.UserPoint;
 import io.hhplus.tdd.point.infrastructure.database.UserPointRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class UserPointServiceImpl implements UserPointService {
 
 	private final UserPointRepository userPointRepository;
-
-	public UserPointServiceImpl(final UserPointRepository userPointRepository) {
-		this.userPointRepository = userPointRepository;
-	}
 
 	@Override
 	public UserPointSelectDTO findById(final long id) {

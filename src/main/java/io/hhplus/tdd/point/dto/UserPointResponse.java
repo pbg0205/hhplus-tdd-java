@@ -1,22 +1,13 @@
 package io.hhplus.tdd.point.dto;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@NoArgsConstructor(force = true)
+@RequiredArgsConstructor
 public class UserPointResponse {
-	private long userId;
-	private long point;
-
-	public UserPointResponse() {
-	}
-
-	public UserPointResponse(final long userId, final long point) {
-		this.userId = userId;
-		this.point = point;
-	}
-
-	public long getUserId() {
-		return userId;
-	}
-
-	public long getPoint() {
-		return point;
-	}
+	private final long userId;
+	private final long point;
 }
