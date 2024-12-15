@@ -33,7 +33,7 @@
 
 ## (3) 시퀀스 다이어그램
 
-### 1. 응답 성공 시나리오
+### 1. 응답 성공 시퀀스
 
 ```mermaid
 sequenceDiagram
@@ -52,7 +52,7 @@ controller -->>- user: UserPointSelectResponse
 ```
 
 
-### 2. 응답 실패 시나리오 : PointService 예외 발생
+### 2. 응답 실패 시퀀스 : PointService 예외 발생
 
 ```mermaid
 sequenceDiagram
@@ -72,21 +72,20 @@ controllerAdvice -->>- user: ErrorResponse
 ```
 
 
-### 3. 응답 실패 시나리오 : PointController 예외 발생
+### 3. 응답 실패 시퀀스 : PointController 예외 발생
 
 ```mermaid
 sequenceDiagram
 actor user
 participant controller as PointController 
-participant service as PointService
 participant controllerAdvice as PointControllerAdvice 
 
 user ->>+ controller: GET /point/{id}
 activate controller
-controller ->>+ service: findById(id)
+controller ->>+ controllerAdvice: handleIllegalArgumentException(IllegalArgumentException)
 deactivate controller
-activate service
-service ->>+ controllerAdvice: handleIllegalArgumentException(IllegalArgumentException)
-deactivate service
+
+activate controllerAdvice
 controllerAdvice -->>- user: ErrorResponse
+    deactivate controllerAdvice
 ```
