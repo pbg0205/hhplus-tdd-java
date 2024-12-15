@@ -1,4 +1,4 @@
-package io.hhplus.tdd.point;
+package io.hhplus.tdd.point.presentation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
