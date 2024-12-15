@@ -18,6 +18,7 @@ import io.hhplus.tdd.point.exception.InvalidUserIdException;
 import io.hhplus.tdd.point.exception.UserNotFoundException;
 import io.hhplus.tdd.point.infrastructure.database.UserPoint;
 import io.hhplus.tdd.point.infrastructure.database.UserPointRepository;
+import io.hhplus.tdd.user.infrastructure.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 class UserPointServiceTest {
@@ -27,9 +28,12 @@ class UserPointServiceTest {
 	@Mock
 	private UserPointRepository userPointRepository;
 
+	@Mock
+	private UserRepository userRepository;
+
 	@BeforeEach
 	void setUp() {
-		this.userPointService = new UserPointServiceImpl(userPointRepository);
+		this.userPointService = new UserPointServiceImpl(userPointRepository, userRepository);
 	}
 
 	@DisplayName("[포인트 조회 실패] 사용자 식별자가 음수라면 예외를 반환한다")
@@ -56,7 +60,7 @@ class UserPointServiceTest {
 		// given
 		final long unRegisteredUserId = 1L;
 
-		when(userPointRepository.selectById(unRegisteredUserId)).thenReturn(UserPoint.empty(unRegisteredUserId));
+		when(userRepository.exists(unRegisteredUserId)).thenReturn(false);
 
 		// when, then
 		assertThatThrownBy(() -> userPointService.findById(unRegisteredUserId))
@@ -70,6 +74,7 @@ class UserPointServiceTest {
 		final long registeredUserId = 1L;
 		final long point = 1_000L;
 
+		when(userRepository.exists(registeredUserId)).thenReturn(true);
 		when(userPointRepository.selectById(registeredUserId))
 			.thenReturn(new UserPoint(registeredUserId, point, System.currentTimeMillis()));
 
