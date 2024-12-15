@@ -15,7 +15,6 @@
 
 | Pass/Fail |    user input     | expected result               |
 |:---------:|:-----------------:|-------------------------------|
-|   Fail    |        빈 값        | 예외 반환 (InvalidUserIdException) |
 |   Fail    |   사용자 식별자 == 음수   | 예외 반환 (InvalidUserIdException) |
 |   Fail    |   사용자 식별자 == 0    | 예외 반환 (InvalidUserIdException) |
 |   Fail    | 양수 && 사용자 식별자 불일치 | 예외 반환 (UserNotFoundException) |
@@ -25,7 +24,6 @@
 
 | Pass/Fail |    user input     | expected status code | expected response body                                   |
 |:---------:|:-----------------:|:--------------------:|:---------------------------------------------------------|
-|   Fail    |        빈 값        |   bad request(400)   | {"code" : "MEMBER01", "message" : "유효하지 않는 유저 식별자 입니다."} |
 |   Fail    |   사용자 식별자 == 음수   |   bad request(400)   | {"code" : "MEMBER01", "message" : "유효하지 않는 유저 식별자 입니다."} |
 |   Fail    |   사용자 식별자 == 0    |   bad request(400)   | {"code" : "MEMBER01", "message" : "유효하지 않는 유저 식별자 입니다."} |
 |   Fail    | 양수 && 미등록 사용자 식별자 |   bad request(400)   | {"code" : "MEMBER02", "message" : "일치하는 유저가 존재하지 않습니다."} |
