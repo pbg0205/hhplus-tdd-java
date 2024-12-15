@@ -11,6 +11,14 @@ public class UserPointSelectDTO {
 		this.point = point;
 	}
 
+	public long getUserId() {
+		return userId;
+	}
+
+	public long getPoint() {
+		return point;
+	}
+
 	@Override
 	public boolean equals(final Object o) {
 		if (this == o)
