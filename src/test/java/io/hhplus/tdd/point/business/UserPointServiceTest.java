@@ -32,17 +32,17 @@ class UserPointServiceTest {
 		this.userPointService = new UserPointServiceImpl(userPointRepository);
 	}
 
-	@DisplayName("[fail] 사용자 식별자가 음수라면 예외를 반환한다")
+	@DisplayName("[포인트 조회 실패] 사용자 식별자가 음수라면 예외를 반환한다")
 	@ParameterizedTest
 	@ValueSource(longs = {-1L, -100L, -500_000_000_00L})
-	void failBecauseOfUserIdNegative(long userId) {
+	void failSelectingUserPointBecauseOfUserIdNegative(long userId) {
 		// given, when, then
 		assertThatThrownBy(() -> userPointService.findById(userId)).isInstanceOf(InvalidUserIdException.class);
 	}
 
-	@DisplayName("[fail] 사용자 식별자는 0이라면 예외를 반환한다")
+	@DisplayName("[포인트 조회 실패] 사용자 식별자는 0이라면 예외를 반환한다")
 	@Test
-	void failBecauseOfUserIdZero() {
+	void failSelectingUserPointBecauseOfUserIdZero() {
 		// given
 		final long userId = 0L;
 
@@ -50,9 +50,9 @@ class UserPointServiceTest {
 		assertThatThrownBy(() -> userPointService.findById(userId)).isInstanceOf(InvalidUserIdException.class);
 	}
 
-	@DisplayName("[fail] 미등록 사용자 식별자를 입력하면 예외를 반환한다")
+	@DisplayName("[포인트 조회 실패] 미등록 사용자 식별자를 입력하면 예외를 반환한다")
 	@Test
-	void failBecauseOfUnRegisteredUser() {
+	void failSelectingUserPointBecauseOfUnRegisteredUser() {
 		// given
 		final long unRegisteredUserId = 1L;
 
@@ -63,7 +63,7 @@ class UserPointServiceTest {
 			.isInstanceOf(UserNotFoundException.class);
 	}
 
-	@DisplayName("[success] 양수이며 등록된 사용자 식별자를 입력하면 현재 회원 포인트를 반환한다")
+	@DisplayName("[포인트 조회 성공] 양수이며 등록된 사용자 식별자를 입력하면 현재 회원 포인트를 반환한다")
 	@Test
 	void successSelectingUserPoint() {
 		// given
