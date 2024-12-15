@@ -29,7 +29,7 @@ class PointControllerTest {
 	@MockBean
 	private UserPointService userPointService;
 
-	@DisplayName("[fail] 음수인 유저 식별자인 경우 bad request 를 반환한다")
+	@DisplayName("[포인트 조회 실패] 음수인 유저 식별자인 경우 bad request 를 반환한다")
 	@Test
 	void failBecauseOfUserIdNegative() throws Exception {
 		// given
@@ -49,7 +49,7 @@ class PointControllerTest {
 		);
 	}
 
-	@DisplayName("[fail] 0인 유저 식별자인 경우 bad request 를 반환한다")
+	@DisplayName("[포인트 조회 실패] 0인 유저 식별자인 경우 bad request 를 반환한다")
 	@Test
 	void failBecauseOfUserIdZero() throws Exception {
 		// given
@@ -69,7 +69,7 @@ class PointControllerTest {
 		);
 	}
 
-	@DisplayName("[fail] 등록되지 않은 유저 식별자인 경우 bad request 를 반환한다")
+	@DisplayName("[포인트 조회 실패] 등록되지 않은 유저 식별자인 경우 bad request 를 반환한다")
 	@Test
 	void failBecauseOfInvalidUserId() throws Exception {
 		// given
@@ -89,7 +89,7 @@ class PointControllerTest {
 		);
 	}
 
-	@DisplayName("[success] 등록된 유저 식별자인 경우 ok 를 반환한다")
+	@DisplayName("[포인트 조회 성공] 등록된 유저 식별자인 경우 ok 를 반환한다")
 	@Test
 	void successFindingUserPoint() throws Exception {
 		// given
