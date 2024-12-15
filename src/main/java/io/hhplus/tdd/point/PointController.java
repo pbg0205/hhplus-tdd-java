@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import io.hhplus.tdd.point.infrastructure.database.PointHistory;
+import io.hhplus.tdd.point.infrastructure.database.UserPoint;
+
 @RestController
 @RequestMapping("/point")
 public class PointController {
