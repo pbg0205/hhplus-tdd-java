@@ -147,11 +147,11 @@ class PointControllerChargeUnitTest {
 		);
 	}
 
-	@DisplayName("[실패] 유저 식별자가 0인 경우, bad request 를 반환한다")
+	@DisplayName("[실패] 등록되지 않은 유저 식별자인 경우, bad request 를 반환한다")
 	@Test
 	void failChargingBecauseOfUnRegisteredUserId() throws Exception {
 		// given
-		long userId = 0L;
+		long userId = 1L;
 		long amount = 1L;
 
 		when(userPointService.charge(anyLong(), anyLong()))
