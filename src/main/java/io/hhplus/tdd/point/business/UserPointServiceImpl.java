@@ -39,8 +39,16 @@ public class UserPointServiceImpl implements UserPointService {
 
 	@Override
 	public UserPointSelectDTO charge(final long id, final long amount) {
-		if (amount < 0 || amount == 0 || amount > MAX_CHARGING_POINT) {
-			throw new InvalidChargingPointException(ErrorType.CHARGING_POINT01);
+		if (amount < 0) {
+			throw new InvalidChargingPointException(ErrorType.CHARGING_POINT_NEGATIVE);
+		}
+
+		if (amount == 0) {
+			throw new InvalidChargingPointException(ErrorType.CHARGING_POINT_ZERO);
+		}
+
+		if (amount > MAX_CHARGING_POINT) {
+			throw new InvalidChargingPointException(ErrorType.CHARGING_POINT_MAX);
 		}
 
 		if (id < 0 || id == 0) {
