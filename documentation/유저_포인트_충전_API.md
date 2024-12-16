@@ -50,7 +50,7 @@ participant controller as PointController
 participant service as PointService
 participant repository as PointRepository
 
-user ->>+ controller: POST /point/{id}/charge
+user ->>+ controller: PATCH /point/{id}/charge
 controller ->>+ service: charge(id, chargingAmount)
 service ->>+ repository: selectById(id)
 repository -->>- service: UserPoint
