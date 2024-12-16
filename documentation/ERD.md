@@ -4,6 +4,10 @@ Point ERDiagram
 
 ```mermaid
 erDiagram
+    User ||--|| UserPoint: contains
+    User {
+        long id
+    }
     UserPoint ||--|{ PointHistory : has
     UserPoint {
         long id
