@@ -40,7 +40,7 @@ class PointControllerChargeUnitTest {
 		long amount = -1L;
 
 		when(userPointService.charge(anyLong(), anyLong()))
-			.thenThrow(new InvalidChargingPointException(ErrorType.CHARGING_POINT01));
+			.thenThrow(new InvalidChargingPointException(ErrorType.CHARGING_POINT_NEGATIVE));
 
 		// when
 		final ResultActions result = mockMvc.perform(patch("/point/{id}/charge", userId)
@@ -63,7 +63,7 @@ class PointControllerChargeUnitTest {
 		long amount = 0L;
 
 		when(userPointService.charge(anyLong(), anyLong()))
-			.thenThrow(new InvalidChargingPointException(ErrorType.CHARGING_POINT02));
+			.thenThrow(new InvalidChargingPointException(ErrorType.CHARGING_POINT_ZERO));
 
 		// when
 		final ResultActions result = mockMvc.perform(patch("/point/{id}/charge", userId)
@@ -86,7 +86,7 @@ class PointControllerChargeUnitTest {
 		long amount = 100_001L; // 단일 충전 최대 포인트: 100_000
 
 		when(userPointService.charge(anyLong(), anyLong()))
-			.thenThrow(new InvalidChargingPointException(ErrorType.CHARGING_POINT03));
+			.thenThrow(new InvalidChargingPointException(ErrorType.CHARGING_POINT_MAX));
 
 		// when
 		final ResultActions result = mockMvc.perform(patch("/point/{id}/charge", userId)
