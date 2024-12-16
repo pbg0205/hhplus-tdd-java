@@ -85,7 +85,7 @@ class UserPointServiceChargeUnitTest {
 			.isInstanceOf(InvalidUserIdException.class);
 	}
 
-	@DisplayName("[실패] 사용자 식별자가 음수인 경우, 예외를 반환한다")
+	@DisplayName("[실패] 사용자 식별자가 0인 경우, 예외를 반환한다")
 	@Test
 	void failChargingPointBecauseOfUserIdZero() {
 		// given
