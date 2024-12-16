@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 import io.hhplus.tdd.point.business.UserPointService;
-import io.hhplus.tdd.point.dto.UserPointChargeResponse;
-import io.hhplus.tdd.point.dto.UserPointSelectDTO;
+import io.hhplus.tdd.point.presentation.dto.response.UserPointChargeResponse;
+import io.hhplus.tdd.point.business.dto.UserPointSelectDTO;
 import io.hhplus.tdd.point.infrastructure.database.PointHistory;
 import io.hhplus.tdd.point.infrastructure.database.UserPoint;
-import io.hhplus.tdd.point.dto.UserPointResponse;
+import io.hhplus.tdd.point.presentation.dto.response.UserPointResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
