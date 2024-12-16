@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import io.hhplus.tdd.common.api.support.error.ErrorType;
 import io.hhplus.tdd.point.business.dto.UserPointSelectDTO;
 import io.hhplus.tdd.point.exception.InvalidChargingPointException;
+import io.hhplus.tdd.point.exception.InvalidPointSpendException;
 import io.hhplus.tdd.point.exception.InvalidUserIdException;
 import io.hhplus.tdd.point.exception.UserNotFoundException;
 import io.hhplus.tdd.point.infrastructure.database.UserPoint;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class UserPointServiceImpl implements UserPointService {
 
 	private static final long MAX_CHARGING_POINT = 100_000L;
+	private static final long MAX_SPENDING_POINT = 10_000L;
 
 	private final UserPointRepository userPointRepository;
 	private final UserRepository userRepository;
@@ -56,6 +58,33 @@ public class UserPointServiceImpl implements UserPointService {
 
 			final UserPoint updatedUserPoint = userPointRepository.insertOrUpdate(id, totalAmount);
 			return new UserPointSelectDTO(updatedUserPoint.id(), totalAmount);
+		}
+	}
+
+	@Override
+	public UserPointSelectDTO spend(final long id, final long amount) {
+		if (amount < 0 || amount == 0 || amount > MAX_SPENDING_POINT) {
+			throw new InvalidPointSpendException();
+		}
+
+		if (id < 0 || id == 0) {
+			throw new InvalidUserIdException();
+		}
+
+		if (!userRepository.exists(id)) {
+			throw new UserNotFoundException();
+		}
+
+		synchronized (this) {
+			final UserPoint userPoint = userPointRepository.selectById(id);
+			final long remainingPoints = userPoint.point() - amount;
+
+			if (remainingPoints < 0) {
+				throw new InvalidPointSpendException();
+			}
+
+			userPointRepository.insertOrUpdate(id, remainingPoints);
+			return new UserPointSelectDTO(userPoint.id(), remainingPoints);
 		}
 	}
 }
