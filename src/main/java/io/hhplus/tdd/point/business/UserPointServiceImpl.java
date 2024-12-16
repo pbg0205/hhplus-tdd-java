@@ -49,11 +49,13 @@ public class UserPointServiceImpl implements UserPointService {
 			throw new UserNotFoundException();
 		}
 
-		final UserPoint userPoint = userPointRepository.selectById(id);
+		synchronized (this) {
+			final UserPoint userPoint = userPointRepository.selectById(id);
 
-		long totalAmount = amount + userPoint.point();
+			long totalAmount = amount + userPoint.point();
 
-		final UserPoint updatedUserPoint = userPointRepository.insertOrUpdate(id, totalAmount);
-		return new UserPointSelectDTO(updatedUserPoint.id(), totalAmount);
+			final UserPoint updatedUserPoint = userPointRepository.insertOrUpdate(id, totalAmount);
+			return new UserPointSelectDTO(updatedUserPoint.id(), totalAmount);
+		}
 	}
 }

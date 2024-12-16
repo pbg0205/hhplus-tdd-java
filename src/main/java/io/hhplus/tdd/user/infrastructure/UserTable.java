@@ -17,6 +17,11 @@ public class UserTable implements UserRepository {
 		return table.get(id) != null;
 	}
 
+	@Override
+	public User save(final long id) {
+		return table.put(id, new User(id));
+	}
+
 	private void throttle(long millis) {
 		try {
 			TimeUnit.MILLISECONDS.sleep((long) (Math.random() * millis));
