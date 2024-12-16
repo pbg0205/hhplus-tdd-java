@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 import io.hhplus.tdd.point.business.UserPointService;
+import io.hhplus.tdd.point.dto.UserPointChargeResponse;
 import io.hhplus.tdd.point.dto.UserPointSelectDTO;
 import io.hhplus.tdd.point.infrastructure.database.PointHistory;
 import io.hhplus.tdd.point.infrastructure.database.UserPoint;
@@ -47,15 +48,13 @@ public class PointController {
 		return List.of();
 	}
 
-	/**
-	 * TODO - 특정 유저의 포인트를 충전하는 기능을 작성해주세요.
-	 */
 	@PatchMapping("{id}/charge")
-	public UserPoint charge(
-		@PathVariable long id,
+	public ResponseEntity<UserPointChargeResponse> charge(
+		@PathVariable(name = "id") long id,
 		@RequestBody long amount
 	) {
-		return new UserPoint(0, 0, 0);
+		final UserPointSelectDTO userPointSelectDTO = userPointService.charge(id, amount);
+		return ResponseEntity.ok(new UserPointChargeResponse(userPointSelectDTO.userId(), userPointSelectDTO.point()));
 	}
 
 	/**

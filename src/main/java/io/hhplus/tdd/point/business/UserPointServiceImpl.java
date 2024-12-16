@@ -2,6 +2,7 @@ package io.hhplus.tdd.point.business;
 
 import org.springframework.stereotype.Service;
 
+import io.hhplus.tdd.common.api.support.error.ErrorType;
 import io.hhplus.tdd.point.dto.UserPointSelectDTO;
 import io.hhplus.tdd.point.exception.InvalidChargingPointException;
 import io.hhplus.tdd.point.exception.InvalidUserIdException;
@@ -37,7 +38,7 @@ public class UserPointServiceImpl implements UserPointService {
 	@Override
 	public UserPointSelectDTO charge(final long id, final long amount) {
 		if (amount < 0 || amount == 0 || amount > MAX_CHARGING_POINT) {
-			throw new InvalidChargingPointException();
+			throw new InvalidChargingPointException(ErrorType.CHARGING_POINT01);
 		}
 
 		if (id < 0 || id == 0) {
