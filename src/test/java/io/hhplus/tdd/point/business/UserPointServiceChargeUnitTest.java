@@ -104,7 +104,7 @@ class UserPointServiceChargeUnitTest {
 		final long userId = 1L;
 		final long chargingPoint = 1L;
 
-		when(userRepository.exists(userId)).thenReturn(false);
+		when(userRepository.exists(anyLong())).thenReturn(false);
 
 		// when, then
 		assertThatThrownBy(() -> userPointService.charge(userId, chargingPoint))
@@ -123,10 +123,10 @@ class UserPointServiceChargeUnitTest {
 		when(userPointRepository.selectById(userId))
 			.thenReturn(new UserPoint(userId, currentPoint, System.currentTimeMillis()));
 		when(userPointRepository.insertOrUpdate(anyLong(), anyLong()))
-			.thenReturn(new UserPoint(userId, chargingPoint, System.currentTimeMillis()));
+			.thenReturn(new UserPoint(userId, currentPoint + chargingPoint, System.currentTimeMillis()));
 
 		// when, then
 		assertThat(userPointService.charge(userId, chargingPoint))
-			.isEqualTo(new UserPointSelectDTO(userId, chargingPoint));
+			.isEqualTo(new UserPointSelectDTO(userId, 2000L));
 	}
 }

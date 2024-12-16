@@ -51,9 +51,9 @@ public class UserPointServiceImpl implements UserPointService {
 
 		final UserPoint userPoint = userPointRepository.selectById(id);
 
-		long totalAmount = amount * userPoint.point();
+		long totalAmount = amount + userPoint.point();
 
 		final UserPoint updatedUserPoint = userPointRepository.insertOrUpdate(id, totalAmount);
-		return new UserPointSelectDTO(updatedUserPoint.id(), updatedUserPoint.point());
+		return new UserPointSelectDTO(updatedUserPoint.id(), totalAmount);
 	}
 }
