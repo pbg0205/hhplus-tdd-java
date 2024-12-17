@@ -8,6 +8,7 @@ import io.hhplus.tdd.point.exception.InvalidChargingPointException;
 import io.hhplus.tdd.point.exception.InvalidPointSpendException;
 import io.hhplus.tdd.point.exception.InvalidUserIdException;
 import io.hhplus.tdd.point.exception.UserNotFoundException;
+import io.hhplus.tdd.point.infrastructure.database.PointHistoryRepository;
 import io.hhplus.tdd.point.infrastructure.database.UserPoint;
 import io.hhplus.tdd.point.infrastructure.database.UserPointRepository;
 import io.hhplus.tdd.user.infrastructure.UserRepository;
@@ -22,6 +23,7 @@ public class UserPointServiceImpl implements UserPointService {
 
 	private final UserPointRepository userPointRepository;
 	private final UserRepository userRepository;
+	private final PointHistoryRepository pointHistoryRepository;
 
 	@Override
 	public UserPointSelectDTO findById(final long id) {

@@ -18,6 +18,7 @@ import io.hhplus.tdd.point.business.dto.UserPointSelectDTO;
 import io.hhplus.tdd.point.exception.InvalidChargingPointException;
 import io.hhplus.tdd.point.exception.InvalidUserIdException;
 import io.hhplus.tdd.point.exception.UserNotFoundException;
+import io.hhplus.tdd.point.infrastructure.database.PointHistoryRepository;
 import io.hhplus.tdd.point.infrastructure.database.UserPoint;
 import io.hhplus.tdd.point.infrastructure.database.UserPointRepository;
 import io.hhplus.tdd.user.infrastructure.UserRepository;
@@ -34,9 +35,12 @@ class UserPointServiceChargeUnitTest {
 	@Mock
 	private UserRepository userRepository;
 
+	@Mock
+	private PointHistoryRepository pointHistoryRepository;
+
 	@BeforeEach
 	void setUp() {
-		this.userPointService = new UserPointServiceImpl(userPointRepository, userRepository);
+		this.userPointService = new UserPointServiceImpl(userPointRepository, userRepository, pointHistoryRepository);
 	}
 
 	@DisplayName("[실패] 충전 포인트가 음수인 경우, 예외를 반환한다")
@@ -51,7 +55,8 @@ class UserPointServiceChargeUnitTest {
 			.isInstanceOf(InvalidChargingPointException.class)
 			.extracting("errorType")
 			.isInstanceOf(ErrorType.class)
-			.satisfies(errorType -> assertThat(((ErrorType)errorType).getErrorCode()).isEqualTo(ErrorCode.CHARGING_POINT01));
+			.satisfies(
+				errorType -> assertThat(((ErrorType)errorType).getErrorCode()).isEqualTo(ErrorCode.CHARGING_POINT01));
 	}
 
 	@DisplayName("[실패] 충전 포인트가 0인 경우, 예외를 반환한다")
@@ -66,7 +71,8 @@ class UserPointServiceChargeUnitTest {
 			.isInstanceOf(InvalidChargingPointException.class)
 			.extracting("errorType")
 			.isInstanceOf(ErrorType.class)
-			.satisfies(errorType -> assertThat(((ErrorType)errorType).getErrorCode()).isEqualTo(ErrorCode.CHARGING_POINT02));
+			.satisfies(
+				errorType -> assertThat(((ErrorType)errorType).getErrorCode()).isEqualTo(ErrorCode.CHARGING_POINT02));
 	}
 
 	@DisplayName("[실패] 충전 포인트가 10만점을 초과하는 경우, 예외를 반환한다")
@@ -81,7 +87,8 @@ class UserPointServiceChargeUnitTest {
 			.isInstanceOf(InvalidChargingPointException.class)
 			.extracting("errorType")
 			.isInstanceOf(ErrorType.class)
-			.satisfies(errorType -> assertThat(((ErrorType)errorType).getErrorCode()).isEqualTo(ErrorCode.CHARGING_POINT03));
+			.satisfies(
+				errorType -> assertThat(((ErrorType)errorType).getErrorCode()).isEqualTo(ErrorCode.CHARGING_POINT03));
 	}
 
 	@DisplayName("[실패] 사용자 식별자가 음수인 경우, 예외를 반환한다")
