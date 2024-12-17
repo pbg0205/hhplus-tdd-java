@@ -4,13 +4,14 @@
 
 1. 충전 포인트, 유저 식별자를 파라미터로 입력 받는다.
 2. 충전 포인트를 검증한다.
-    - 충전 포인트는 양수이다.
+    - 충전 포인트 < 0 인 경우, 요청은 실패한다.
+    - 충전 포인트 == 0 인 경우, 요청은 실패한다.
 3. 유저 식별자를 검증한다.
-    - 유저는 가입된 사용자여야 한다.
-    - 가입되지 않는 사용자는 충전할 수 없다.
+   - 유저 식별자 < 0 인 경우, 요청은 실패한다.
+   - 유저 식별자 == 0 인 경우, 요청은 실패한다.
+   - 유저 식별자 > 0 && 미등록 유저인 경우, 요청은 실패한다.
 4. 충전 포인트를 충전한다.
-    - 충전 포인트는 최대 10만점이다.
-    - 최대 충전 포인트를 초과할 경우 충전할 수 없다.
+    - 1회 충전 최대 포인트 > 10만점인 경우, 요청은 실패한다.
 5. 충전 결과를 응답한다.
 
 ## (2) 단위 테스트 케이스
@@ -46,54 +47,89 @@
 ```mermaid
 sequenceDiagram
 actor user
-participant controller as PointController 
-participant service as PointService
-participant repository as PointRepository
+participant pointController as PointController 
+participant pointService as PointService
+participant userRepository as UserRepository
+participant pointRepository as PointRepository
 
-user ->>+ controller: PATCH /point/{id}/charge
-controller ->>+ service: charge(id, chargingAmount)
-service ->>+ repository: selectById(id)
-repository -->>- service: UserPoint
-service ->>+ repository: insertOrUpdate(id, amount)
-repository -->>- service: UserPoint
-service -->>- controller: UserPointSelectDTO
-controller -->>- user: UserPointChargeResponse
+user ->>+ pointController: PATCH /point/{id}/charge
+pointController ->>+ pointService: 포인트 충전 요청__charge(id, chargingAmount)
+pointService ->>+ userRepository: 사용자 존재 여부__exists(id)
+userRepository -->>- pointService: 사용자 존재 여부__boolean
+pointService ->>+ pointRepository: 사용자 포인트 조회__selectById(id)
+pointRepository -->>- pointService: 사용자 포인트 조회__UserPoint
+pointService -->> pointService: 사용자 포인트 충전 연산
+pointService ->>+ pointRepository: 사용자 포인트 업데이트__insertOrUpdate(id, amount)
+pointRepository -->>- pointService: 사용자 포인트 업데이트__UserPoint
+pointService -->>- pointController: 포인트 충전 응답__UserPointSelectDTO
+pointController -->>- user: UserPointChargeResponse
 ```
 
 
-### 2. 응답 실패 시퀀스 : PointService 예외 발생
+### 2. 응답 실패 시퀀스 : 유효하지 않는 유저 식별자 (유저 식별자 < 0 || 유저 식별자 == 0)
 
 ```mermaid
 sequenceDiagram
 actor user
-participant controller as PointController 
-participant service as PointService
-participant controllerAdvice as PointControllerAdvice 
+participant pointController as PointController 
+participant pointService as PointService
+participant pointControllerAdvice as PointControllerAdvice 
 
-user ->>+ controller: POST /point/{id}/charge
-activate controller
-controller ->>+ service: charge(id, chargingAmount)
-deactivate controller
-activate service
-service ->>+ controllerAdvice: handleInvalidChargingPointException(exception)
-deactivate service
-controllerAdvice -->>- user: ErrorResponse
+user ->>+ pointController: POST /point/{id}/charge
+activate pointController
+pointController ->>+ pointService: 포인트 충전 요청__charge(id, chargingAmount)
+deactivate pointController
+activate pointService
+pointService ->>+ pointControllerAdvice: 예외 처리 요청__handleUserNotFoundException(exception)
+deactivate pointService
+pointControllerAdvice -->>- user: 예외 결과 응답__ErrorResponse
 ```
 
 
-### 3. 응답 실패 시퀀스 : PointController 예외 발생
+### 3. 응답 실패 시퀀스 : 사용자 식별자 > 0 && 미등록 사용자 식별자
 
 ```mermaid
 sequenceDiagram
 actor user
-participant controller as PointController
-participant controllerAdvice as PointControllerAdvice
+participant pointController as PointController
+participant pointService as PointService
+participant userRepository as UserRepository
+participant pointControllerAdvice as PointControllerAdvice
 
-user ->>+ controller: POST /point/{id}/charge
-activate controller
-controller ->>+ controllerAdvice: handleInvalidChargingPointException(exception)
-deactivate controller
-activate controllerAdvice
-controllerAdvice -->> user: ErrorResponse
-deactivate controllerAdvice
+user ->>+ pointController: POST /point/{id}/charge
+activate pointController
+pointController ->>+ pointService: 포인트 충전 요청__charge(id, chargingAmount)
+deactivate pointController
+activate pointService
+pointService ->>+ userRepository: 유저 존재 여부 조회__exists(id)
+userRepository -->>- pointService: 유저 존재 여부__boolean
+pointService ->>+ pointControllerAdvice: 예외 처리 요청__handleUserNotFoundException(exception)
+deactivate pointService
+pointControllerAdvice -->>- user: 예외 결과 응답__ErrorResponse
+```
+
+### 3. 응답 실패 시퀀스 : 사용 포인트 > 1회 최대 사용 포인트
+
+```mermaid
+sequenceDiagram
+actor user
+participant pointController as PointController
+participant pointService as PointService
+participant userRepository as UserRepository
+participant pointRepository as PointRepository
+participant pointControllerAdvice as PointControllerAdvice
+
+user ->>+ pointController: POST /point/{id}/charge
+activate pointController
+pointController ->>+ pointService: 포인트 충전 요청__charge(id, chargingAmount)
+deactivate pointController
+activate pointService
+pointService ->>+ userRepository: 유저 존재 여부 조회__exists(id)
+userRepository -->>- pointService: 유저 존재 여부__boolean
+pointService ->>+ pointRepository: 유저 포인트 조회__findById(id)
+pointRepository -->> pointService: 유저 포인트 조회__boolean
+pointService --x pointService: 사용자 포인트 충전 연산
+pointService ->>+ pointControllerAdvice: 예외 처리 요청__handleUserNotFoundException(exception)
+deactivate pointService
+pointControllerAdvice -->>- user: 예외 결과 응답__ErrorResponse
 ```
