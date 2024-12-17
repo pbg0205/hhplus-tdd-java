@@ -26,7 +26,7 @@
 |   Fail    |     userId     |          사용자 식별자 == 음수          | 예외 반환 (InvalidUserIdException)        |
 |   Fail    |     userId     |          사용자 식별자 == 0           | 예외 반환 (InvalidUserIdException)        |
 |   Fail    |     userId     |        양수 && 사용자 식별자 불일치        | 예외 반환 (UserNotFoundException)         |
-|   Fail    | userId & point | (양수 && 사용자 식별자 일치) + 유효한 충전 포인트 | 포인트를 충전한다.                            |
+|   Pass    | userId & point | (양수 && 사용자 식별자 일치) + 유효한 충전 포인트 | 포인트를 충전한다.                            |
 
 ### 2. PointController
 

@@ -32,7 +32,7 @@
 |   Fail    |     userId     |                사용자 식별자 < 0                | 예외 반환 (InvalidUserIdException)     |
 |   Fail    |     userId     |               사용자 식별자 == 0                | 예외 반환 (InvalidUserIdException)     |
 |   Fail    |     userId     |             양수 && 사용자 식별자 불일치             | 예외 반환 (UserNotFoundException)      |
-|   Fail    | userId & point | (사용자 식별자 > 0) && 사용자 식별자 일치 && 유효한 사용 포인트 | 포인트를 사용에 성공한다.                     |
+|   Pass    | userId & point | (사용자 식별자 > 0) && 사용자 식별자 일치 && 유효한 사용 포인트 | 포인트를 사용에 성공한다.                     |
 
 ### 2. PointController
 
@@ -71,7 +71,6 @@ pointService -->> pointController: 포인트 사용 결과__UserPointSelectDTO
 pointController -->> user: 포인트 사용 결과 응답__UserPointChargeResponse
 ```
 
-
 ### 2. 응답 실패 시퀀스 : 유효하지 않는 포인트 사용 요청 (음수, 0, 일회 최대 사용 포인트)
 
 ```mermaid
@@ -92,7 +91,6 @@ activate pointControllerAdvice
 pointControllerAdvice -->> user: 예외 결과 응답__ErrorResponse
 deactivate pointControllerAdvice
 ```
-
 
 ### 3. 응답 실패 시퀀스 : 미등록 사용자 요청
 
