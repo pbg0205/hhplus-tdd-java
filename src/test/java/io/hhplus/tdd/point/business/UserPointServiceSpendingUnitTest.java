@@ -12,6 +12,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import io.hhplus.tdd.common.api.support.error.ErrorCode;
+import io.hhplus.tdd.common.api.support.error.ErrorType;
 import io.hhplus.tdd.point.business.dto.UserPointSelectDTO;
 import io.hhplus.tdd.point.exception.InvalidPointSpendException;
 import io.hhplus.tdd.point.exception.InvalidUserIdException;
@@ -46,7 +48,10 @@ class UserPointServiceSpendingUnitTest {
 
 		// when, then
 		assertThatThrownBy(() -> userPointService.spend(userId, usingPoint))
-			.isInstanceOf(InvalidPointSpendException.class);
+			.isInstanceOf(InvalidPointSpendException.class)
+			.extracting("errorType")
+			.isInstanceOf(ErrorType.class)
+			.satisfies(errorType -> assertThat(((ErrorType)errorType)).isEqualTo(ErrorType.SPENDING_POINT_NEGATIVE));
 	}
 
 	@DisplayName("[실패] 사용 포인트가 0인 경우, 예외를 반환한다")
@@ -58,7 +63,10 @@ class UserPointServiceSpendingUnitTest {
 
 		// when, then
 		assertThatThrownBy(() -> userPointService.spend(userId, usingPoint))
-			.isInstanceOf(InvalidPointSpendException.class);
+			.isInstanceOf(InvalidPointSpendException.class)
+			.extracting("errorType")
+			.isInstanceOf(ErrorType.class)
+			.satisfies(errorType -> assertThat(((ErrorType)errorType)).isEqualTo(ErrorType.SPENDING_POINT_ZERO));
 	}
 
 	@DisplayName("[실패] 사용 포인트가 1회 사용 최대 포인트인 만점(10_000)을 초과하는 경우, 예외를 반환한다")
@@ -70,7 +78,10 @@ class UserPointServiceSpendingUnitTest {
 
 		// when, then
 		assertThatThrownBy(() -> userPointService.spend(userId, usingPoint))
-			.isInstanceOf(InvalidPointSpendException.class);
+			.isInstanceOf(InvalidPointSpendException.class)
+			.extracting("errorType")
+			.isInstanceOf(ErrorType.class)
+			.satisfies(errorType -> assertThat(((ErrorType)errorType)).isEqualTo(ErrorType.SPENDING_POINT_MAX));
 	}
 
 	@DisplayName("[실패] 사용자 식별자가 음수인 경우, 예외를 반환한다")
@@ -107,7 +118,7 @@ class UserPointServiceSpendingUnitTest {
 		when(userRepository.exists(anyLong())).thenReturn(false);
 
 		// when, then
-		assertThatThrownBy(() -> userPointService.charge(userId, usingPoint))
+		assertThatThrownBy(() -> userPointService.spend(userId, usingPoint))
 			.isInstanceOf(UserNotFoundException.class);
 	}
 
@@ -125,7 +136,10 @@ class UserPointServiceSpendingUnitTest {
 
 		// when, then
 		assertThatThrownBy(() -> userPointService.spend(userId, amount))
-			.isInstanceOf(InvalidPointSpendException.class);
+			.isInstanceOf(InvalidPointSpendException.class)
+			.extracting("errorType")
+			.isInstanceOf(ErrorType.class)
+			.satisfies(errorType -> assertThat(((ErrorType)errorType).getErrorCode()).isEqualTo(ErrorCode.POINT_USE01));
 	}
 
 	@DisplayName("[성공] 등록 사용자 식별자이고 1일 최대 사용 포인트 이하의 양수인 포인트인 경우, 정상 사용된다.")

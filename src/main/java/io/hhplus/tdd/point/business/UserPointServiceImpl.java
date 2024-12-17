@@ -71,8 +71,16 @@ public class UserPointServiceImpl implements UserPointService {
 
 	@Override
 	public UserPointSelectDTO spend(final long id, final long amount) {
-		if (amount < 0 || amount == 0 || amount > MAX_SPENDING_POINT) {
-			throw new InvalidPointSpendException();
+		if (amount < 0) {
+			throw new InvalidPointSpendException(ErrorType.SPENDING_POINT_NEGATIVE);
+		}
+
+		if (amount == 0) {
+			throw new InvalidPointSpendException(ErrorType.SPENDING_POINT_ZERO);
+		}
+
+		if (amount > MAX_SPENDING_POINT) {
+			throw new InvalidPointSpendException(ErrorType.SPENDING_POINT_MAX);
 		}
 
 		if (id < 0 || id == 0) {
@@ -88,7 +96,7 @@ public class UserPointServiceImpl implements UserPointService {
 			final long remainingPoints = userPoint.point() - amount;
 
 			if (remainingPoints < 0) {
-				throw new InvalidPointSpendException();
+				throw new InvalidPointSpendException(ErrorType.SPENDING_POINT_NEGATIVE);
 			}
 
 			userPointRepository.insertOrUpdate(id, remainingPoints);
