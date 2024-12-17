@@ -1,5 +1,7 @@
 package io.hhplus.tdd.point.presentation;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -10,13 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 import io.hhplus.tdd.point.business.UserPointService;
-import io.hhplus.tdd.point.presentation.dto.response.UserPointChargeResponse;
 import io.hhplus.tdd.point.business.dto.UserPointSelectDTO;
 import io.hhplus.tdd.point.infrastructure.database.PointHistory;
-import io.hhplus.tdd.point.infrastructure.database.UserPoint;
+import io.hhplus.tdd.point.presentation.dto.response.UserPointSpendResponse;
+import io.hhplus.tdd.point.presentation.dto.response.UserPointChargeResponse;
 import io.hhplus.tdd.point.presentation.dto.response.UserPointResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -57,14 +57,12 @@ public class PointController {
 		return ResponseEntity.ok(new UserPointChargeResponse(userPointSelectDTO.userId(), userPointSelectDTO.point()));
 	}
 
-	/**
-	 * TODO - 특정 유저의 포인트를 사용하는 기능을 작성해주세요.
-	 */
 	@PatchMapping("{id}/use")
-	public UserPoint use(
-		@PathVariable long id,
+	public ResponseEntity<UserPointSpendResponse> use(
+		@PathVariable(name = "id") long id,
 		@RequestBody long amount
 	) {
-		return new UserPoint(0, 0, 0);
+		final UserPointSelectDTO userPointSelectDTO = userPointService.spend(id, amount);
+		return ResponseEntity.ok(new UserPointSpendResponse(userPointSelectDTO.userId(), userPointSelectDTO.point()));
 	}
 }

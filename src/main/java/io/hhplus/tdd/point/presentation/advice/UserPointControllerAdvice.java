@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import io.hhplus.tdd.common.api.support.error.ErrorResponse;
 import io.hhplus.tdd.common.api.support.error.ErrorType;
 import io.hhplus.tdd.point.exception.InvalidChargingPointException;
+import io.hhplus.tdd.point.exception.InvalidPointSpendException;
 import io.hhplus.tdd.point.exception.InvalidUserIdException;
 import io.hhplus.tdd.point.exception.UserNotFoundException;
 
@@ -34,6 +35,14 @@ public class UserPointControllerAdvice {
 	public ResponseEntity<ErrorResponse> handleInvalidChargingPointException(
 		InvalidChargingPointException invalidChargingPointException) {
 		final ErrorType errorType = invalidChargingPointException.getErrorType();
+		return ResponseEntity.badRequest()
+			.body(new ErrorResponse(errorType.getErrorCode().name(), errorType.getMessage()));
+	}
+
+	@ExceptionHandler({InvalidPointSpendException.class})
+	public ResponseEntity<ErrorResponse> handleInvalidPointSpendException(
+		InvalidPointSpendException invalidPointSpendException) {
+		final ErrorType errorType = invalidPointSpendException.getErrorType();
 		return ResponseEntity.badRequest()
 			.body(new ErrorResponse(errorType.getErrorCode().name(), errorType.getMessage()));
 	}
