@@ -2,9 +2,12 @@
 
 ## (1) 행동 분석
 
-1. 유저 아이디를 전달 받는다.
-2. 유저 아이디를 검증한다.
-3. 유저를 조회한다.
+1. 유저 식별자를 전달 받는다.
+2. 유저 식별자를 검증한다.
+   - 유저 식별자 < 0 인 경우, 요청은 실패한다.
+   - 유저 식별자 == 0 인 경우, 요청은 실패한다.
+   - 유저 식별자 > 0 && 미등록 유저인 경우, 요청은 실패한다.
+3. 유저 포인트를 조회한다.
 4. 유저 아이디, 유저 포인트를 반환한다.
 
 <br>
@@ -38,54 +41,64 @@
 ```mermaid
 sequenceDiagram
 actor user
-participant controller as PointController 
-participant service as PointService
-participant repository as PointRepository
+participant pointController as PointController 
+participant pointService as PointService
+participant userRepository as UserRepository
+participant pointRepository as PointRepository
 
-user ->>+ controller: GET /point/{id}
-controller ->>+ service: findById(id)
-service ->>+ repository: selectById(id)
-
-repository -->>- service: UserPoint
-service -->>- controller: UserPointSelectDTO
-controller -->>- user: UserPointSelectResponse
+user ->>+ pointController: GET /point/{id}
+pointController ->>+ pointService: 사용자 조회 요청__findById(id)
+pointService ->>+ userRepository: 사용자 존재 여부 요청__exists(id)
+userRepository -->>- pointService: 사용자 존재 여부__boolean
+pointService ->>+ pointRepository: 사용자 조회__selectById(id)
+pointRepository -->>- pointService: 사용자 포인트 정보__UserPoint
+pointService -->>- pointController: 사용자 포인트 정보__UserPointSelectDTO
+pointController -->>- user: 사용자 포인트 정보 응답__UserPointSelectResponse
 ```
 
 
-### 2. 응답 실패 시퀀스 : PointService 예외 발생
+### 2. 응답 실패 시퀀스 : 유효하지 않은 식별자 (사용자 식별자 < 0 || 사용자 식별자 == 0)
 
 ```mermaid
 sequenceDiagram
 actor user
-participant controller as PointController 
-participant service as PointService
-participant controllerAdvice as PointControllerAdvice 
+participant pointController as PointController
+participant pointService as PointService
+participant pointControllerAdvice as PointControllerAdvice
 
-user ->>+ controller: GET /point/{id}
-activate controller
-controller ->>+ service: findById(id)
-deactivate controller
-activate service
-service ->>+ controllerAdvice: handleIllegalArgumentException(IllegalArgumentException)
-deactivate service
-controllerAdvice -->>- user: ErrorResponse
+user ->> pointController: GET /point/{id}
+activate pointController
+pointController ->> pointService: 사용자 조회 요청__findById(id)
+deactivate pointController
+activate pointService
+pointService ->> pointControllerAdvice: 유효하지 않은 식별자__handleInvalidUserIdException(exception)
+deactivate pointService
+activate pointControllerAdvice
+pointControllerAdvice -->> user: 에러 정보 응답__ErrorResponse
+deactivate pointControllerAdvice
 ```
 
 
-### 3. 응답 실패 시퀀스 : PointController 예외 발생
+### 3. 응답 실패 시퀀스 : 사용자 식별자 > 0 && 미등록 사용자 식별자
 
 ```mermaid
 sequenceDiagram
 actor user
-participant controller as PointController 
-participant controllerAdvice as PointControllerAdvice 
+participant pointController as PointController
+participant pointService as PointService
+participant userRepository as UserRepository
+participant pointControllerAdvice as PointControllerAdvice
 
-user ->>+ controller: GET /point/{id}
-activate controller
-controller ->>+ controllerAdvice: handleIllegalArgumentException(IllegalArgumentException)
-deactivate controller
-
-activate controllerAdvice
-controllerAdvice -->>- user: ErrorResponse
-    deactivate controllerAdvice
+user ->> pointController: GET /point/{id}
+activate pointController
+pointController ->> pointService: 사용자 조회 요청__findById(id)
+deactivate pointController
+activate pointService
+pointService ->> userRepository: 사용자 존재 여부 요청__exists(id)
+userRepository -->> pointService: 사용자 존재 여부__bolean
+pointService ->> pointControllerAdvice: 존재하지 않는 식별자__handleUserNotFoundException(exception)
+deactivate pointService
+activate pointControllerAdvice
+pointControllerAdvice -->> user: 에러 정보 응답__ErrorResponse
+deactivate pointControllerAdvice
 ```
