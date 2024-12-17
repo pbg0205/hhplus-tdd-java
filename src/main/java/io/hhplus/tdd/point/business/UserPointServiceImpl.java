@@ -1,13 +1,17 @@
 package io.hhplus.tdd.point.business;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import io.hhplus.tdd.common.api.support.error.ErrorType;
+import io.hhplus.tdd.point.business.dto.PointHistorySelectDTO;
 import io.hhplus.tdd.point.business.dto.UserPointSelectDTO;
 import io.hhplus.tdd.point.exception.InvalidChargingPointException;
 import io.hhplus.tdd.point.exception.InvalidPointSpendException;
 import io.hhplus.tdd.point.exception.InvalidUserIdException;
 import io.hhplus.tdd.point.exception.UserNotFoundException;
+import io.hhplus.tdd.point.infrastructure.database.PointHistory;
 import io.hhplus.tdd.point.infrastructure.database.PointHistoryRepository;
 import io.hhplus.tdd.point.infrastructure.database.UserPoint;
 import io.hhplus.tdd.point.infrastructure.database.UserPointRepository;
@@ -104,5 +108,31 @@ public class UserPointServiceImpl implements UserPointService {
 			userPointRepository.insertOrUpdate(id, remainingPoints);
 			return new UserPointSelectDTO(userPoint.id(), remainingPoints);
 		}
+	}
+
+	@Override
+	public List<PointHistorySelectDTO> findPointHistoryByUserId(final long userId) {
+		if (userId < 0) {
+			throw new InvalidUserIdException();
+		}
+
+		if (userId == 0) {
+			throw new InvalidUserIdException();
+		}
+
+		if (!userRepository.exists(userId)) {
+			throw new UserNotFoundException();
+		}
+
+		final List<PointHistory> pointHistoryList = pointHistoryRepository.selectAllByUserId(userId);
+
+		return pointHistoryList.stream()
+			.map(pointHistory -> new PointHistorySelectDTO(
+				pointHistory.id(),
+				pointHistory.userId(),
+				pointHistory.amount(),
+				pointHistory.type(),
+				pointHistory.updateMillis())
+			).toList();
 	}
 }
