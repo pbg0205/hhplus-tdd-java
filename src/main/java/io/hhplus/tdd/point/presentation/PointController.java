@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.hhplus.tdd.point.business.UserPointService;
+import io.hhplus.tdd.point.business.dto.PointHistorySelectDTO;
 import io.hhplus.tdd.point.business.dto.UserPointSelectDTO;
 import io.hhplus.tdd.point.infrastructure.database.PointHistory;
+import io.hhplus.tdd.point.presentation.dto.response.PointHistoryResponse;
+import io.hhplus.tdd.point.presentation.dto.response.SinglePointHistoryResponse;
 import io.hhplus.tdd.point.presentation.dto.response.UserPointSpendResponse;
 import io.hhplus.tdd.point.presentation.dto.response.UserPointChargeResponse;
 import io.hhplus.tdd.point.presentation.dto.response.UserPointResponse;
@@ -42,10 +45,15 @@ public class PointController {
 	 * TODO - 특정 유저의 포인트 충전/이용 내역을 조회하는 기능을 작성해주세요.
 	 */
 	@GetMapping("{id}/histories")
-	public List<PointHistory> history(
-		@PathVariable long id
+	public ResponseEntity<PointHistoryResponse> history(
+		@PathVariable(name = "id") long id
 	) {
-		return List.of();
+		final List<PointHistorySelectDTO> pointHistorySelectDTOListList = userPointService.findPointHistoryByUserId(id);
+		final List<SinglePointHistoryResponse> singleHistoryResponseList = pointHistorySelectDTOListList.stream()
+			.map(SinglePointHistoryResponse::from)
+			.toList();
+
+		return ResponseEntity.ok(new PointHistoryResponse(singleHistoryResponseList));
 	}
 
 	@PatchMapping("{id}/charge")
