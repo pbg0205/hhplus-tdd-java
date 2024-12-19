@@ -13,6 +13,7 @@ import io.hhplus.tdd.point.exception.InvalidUserIdException;
 import io.hhplus.tdd.point.exception.UserNotFoundException;
 import io.hhplus.tdd.point.infrastructure.database.PointHistory;
 import io.hhplus.tdd.point.infrastructure.database.PointHistoryRepository;
+import io.hhplus.tdd.point.infrastructure.database.TransactionType;
 import io.hhplus.tdd.point.infrastructure.database.UserPoint;
 import io.hhplus.tdd.point.infrastructure.database.UserPointRepository;
 import io.hhplus.tdd.user.infrastructure.UserRepository;
@@ -71,6 +72,7 @@ public class UserPointServiceImpl implements UserPointService {
 			long totalAmount = amount + userPoint.point();
 
 			final UserPoint updatedUserPoint = userPointRepository.insertOrUpdate(id, totalAmount);
+			pointHistoryRepository.insert(userPoint.id(), amount, TransactionType.CHARGE, System.currentTimeMillis());
 			return new UserPointSelectDTO(updatedUserPoint.id(), totalAmount);
 		}
 	}
@@ -106,6 +108,7 @@ public class UserPointServiceImpl implements UserPointService {
 			}
 
 			userPointRepository.insertOrUpdate(id, remainingPoints);
+			pointHistoryRepository.insert(userPoint.id(), amount, TransactionType.USE, System.currentTimeMillis());
 			return new UserPointSelectDTO(userPoint.id(), remainingPoints);
 		}
 	}
